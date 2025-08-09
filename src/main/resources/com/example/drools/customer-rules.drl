@@ -1,0 +1,47 @@
+package com.example.drools
+
+import com.example.drools.Customer
+
+rule "Bronze Membership"
+salience 10
+when
+    $customer : Customer(purchaseCount >= 5, purchaseCount < 15, totalSpent >= 200, totalSpent < 1000)
+then
+    $customer.setMembershipLevel("Bronze");
+    System.out.println("Bronze membership applied for: " + $customer.getName());
+end
+
+rule "Silver Membership"
+salience 20
+when
+    $customer : Customer(purchaseCount >= 15, purchaseCount < 30, totalSpent >= 1000, totalSpent < 5000)
+then
+    $customer.setMembershipLevel("Silver");
+    System.out.println("Silver membership applied for: " + $customer.getName());
+end
+
+rule "Gold Membership"
+salience 30
+when
+    $customer : Customer(purchaseCount >= 30, totalSpent >= 5000)
+then
+    $customer.setMembershipLevel("Gold");
+    $customer.setVipStatus(true);
+    System.out.println("Gold membership with VIP status applied for: " + $customer.getName());
+end
+
+rule "VIP High Spender"
+salience 25
+when
+    $customer : Customer(totalSpent >= 10000)
+then
+    $customer.setVipStatus(true);
+    System.out.println("VIP status granted for high spender: " + $customer.getName());
+end
+
+rule "Frequent Buyer Bonus"
+when
+    $customer : Customer(purchaseCount >= 50, membershipLevel == "Gold")
+then
+    System.out.println("Frequent buyer bonus applied for: " + $customer.getName());
+end

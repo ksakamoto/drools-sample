@@ -1,0 +1,35 @@
+package com.example.drools
+
+import com.example.drools.Product
+
+rule "Electronics Discount"
+when
+    $product : Product(type == "Electronics", price > 100)
+then
+    $product.setDiscount(10);
+    System.out.println("Electronics discount applied: 10% off for " + $product.getName());
+end
+
+rule "Clothing Summer Sale"
+when
+    $product : Product(type == "Clothing")
+then
+    $product.setDiscount(15);
+    System.out.println("Summer sale discount applied: 15% off for " + $product.getName());
+end
+
+rule "High Value Discount"
+when
+    $product : Product(price > 500)
+then
+    $product.setDiscount($product.getDiscount() + 5);
+    System.out.println("High value item discount applied: Additional 5% off for " + $product.getName());
+end
+
+rule "Books Discount"
+when
+    $product : Product(type == "Books", price > 50)
+then
+    $product.setDiscount(20);
+    System.out.println("Books discount applied: 20% off for " + $product.getName());
+end

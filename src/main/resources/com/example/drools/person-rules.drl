@@ -1,0 +1,37 @@
+package com.example.drools
+
+import com.example.drools.Person
+
+rule "Categorize Adult"
+when
+    $person : Person(age >= 18, age < 65)
+then
+    $person.setCategory("Adult");
+    $person.setEligible(true);
+    System.out.println("Rule applied: " + $person.getName() + " is categorized as Adult");
+end
+
+rule "Categorize Senior"
+when
+    $person : Person(age >= 65)
+then
+    $person.setCategory("Senior");
+    $person.setEligible(true);
+    System.out.println("Rule applied: " + $person.getName() + " is categorized as Senior with special benefits");
+end
+
+rule "Categorize Minor"
+when
+    $person : Person(age < 18)
+then
+    $person.setCategory("Minor");
+    $person.setEligible(false);
+    System.out.println("Rule applied: " + $person.getName() + " is categorized as Minor (not eligible)");
+end
+
+rule "Special Promotion for Young Adults"
+when
+    $person : Person(age >= 18, age <= 25, category == "Adult")
+then
+    System.out.println("Special promotion applied for young adult: " + $person.getName());
+end
