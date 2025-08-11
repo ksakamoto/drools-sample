@@ -26,6 +26,9 @@ public class DroolsApplication {
         
         // Test Customer Rules
         app.testCustomerRules();
+        
+        // Force clean shutdown to avoid ForkJoinPool thread warnings
+        System.exit(0);
     }
     
     public void testPersonRules() {
@@ -62,6 +65,7 @@ public class DroolsApplication {
             }
             
             kieSession.dispose();
+            kieContainer.dispose();
             
         } catch (Exception e) {
             System.err.println("Error executing person rules: " + e.getMessage());
@@ -104,6 +108,7 @@ public class DroolsApplication {
             }
             
             kieSession.dispose();
+            kieContainer.dispose();
             
         } catch (Exception e) {
             System.err.println("Error executing product rules: " + e.getMessage());
@@ -145,6 +150,7 @@ public class DroolsApplication {
             }
             
             kieSession.dispose();
+            kieContainer.dispose();
             
         } catch (Exception e) {
             System.err.println("Error executing customer rules: " + e.getMessage());

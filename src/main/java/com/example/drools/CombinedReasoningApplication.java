@@ -41,6 +41,11 @@ public class CombinedReasoningApplication {
         System.out.println("=== まとめ ===");
         System.out.println("• 顧客の現在のランクを自動判定");
         System.out.println("• 次のランクへの不足条件を具体的に数値で提示");
+        
+        app.cleanup();
+        
+        // Force clean shutdown to avoid ForkJoinPool thread warnings
+        System.exit(0);
     }
 
     /**
@@ -140,6 +145,15 @@ public class CombinedReasoningApplication {
         
         
         backwardSession.dispose();
+    }
+    
+    /**
+     * リソースのクリーンアップ
+     */
+    public void cleanup() {
+        if (kieContainer != null) {
+            kieContainer.dispose();
+        }
     }
 
 }

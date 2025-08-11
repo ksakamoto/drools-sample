@@ -52,10 +52,14 @@ public class CustomerBackwardReasoningDemo {
             }
 
             backwardSession.dispose();
+            kieContainer.dispose();
 
         } catch (Exception e) {
             System.err.println("エラーが発生しました: " + e.getMessage());
             e.printStackTrace();
         }
+        
+        // Force clean shutdown to avoid ForkJoinPool thread warnings
+        System.exit(0);
     }
 }
