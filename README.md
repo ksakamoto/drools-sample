@@ -1,46 +1,60 @@
 # Drools BRMS Sample Application
 
-This is a sample Java application demonstrating the use of Drools as a Business Rules Management System (BRMS).
+This is a comprehensive Java application demonstrating advanced Drools features including both **forward reasoning** (classification and rule execution) and **backward reasoning** (gap analysis and requirement computation) patterns for business rules management.
 
 ## Project Structure
 
 ```
-├── pom.xml                           # Maven configuration with Drools dependencies
+├── pom.xml                             # Maven configuration with Drools dependencies
 ├── src/
 │   └── main/
 │       ├── java/com/example/drools/
-│       │   ├── Person.java           # Domain model for person
-│       │   ├── Product.java          # Domain model for product
-│       │   ├── Customer.java         # Domain model for customer
-│       │   └── DroolsApplication.java # Main application class
+│       │   ├── Person.java             # Domain model for person
+│       │   ├── Product.java            # Domain model for product  
+│       │   ├── Customer.java           # Extended customer model with rank system
+│       │   ├── CustomerRank.java       # Enum defining 4-tier rank system
+│       │   ├── RankRequirement.java    # Model for backward reasoning analysis
+│       │   ├── DroolsApplication.java  # Main demo (forward reasoning only)
+│       │   ├── CustomerBackwardReasoningDemo.java  # Two-phase demo
+│       │   └── CombinedReasoningApplication.java   # Real-world business flow
 │       └── resources/
-│           └── com/example/drools/   # Proper package structure for DRL files
-│               ├── person-rules.drl  # Business rules for person categorization
-│               ├── product-rules.drl # Business rules for product discounts
-│               └── customer-rules.drl # Business rules for customer membership
+│           ├── com/example/drools/     # Forward reasoning rules
+│           │   ├── person-rules.drl    # Age categorization rules
+│           │   ├── product-rules.drl   # Product discount rules
+│           │   └── customer-rules.drl  # Customer rank assignment rules
+│           ├── com/example/drools/backward/  # Backward reasoning rules
+│           │   └── backward-reasoning-rules.drl  # Gap analysis rules
 │           └── META-INF/
-│               └── kmodule.xml       # Drools configuration
+│               └── kmodule.xml         # Dual knowledge base configuration
 ```
 
 ## Features Demonstrated
 
-### Person Rules
+### Forward Reasoning (Classification & Rule Execution)
+
+#### Person Rules
 - **Age Categorization**: Automatically categorizes persons as Minor, Adult, or Senior
 - **Eligibility Check**: Determines eligibility based on age
 - **Special Promotions**: Applies special offers for young adults (18-25)
 
-### Product Rules
+#### Product Rules
 - **Electronics Discount**: 10% discount for electronics over $100
 - **Clothing Sale**: 15% discount for all clothing items
 - **High Value Discount**: Additional 5% off for items over $500
 - **Books Discount**: 20% discount for books over $50
 
-### Customer Rules
-- **Bronze Membership**: 5-14 purchases, $200-$999 spent
-- **Silver Membership**: 15-29 purchases, $1,000-$4,999 spent
-- **Gold Membership**: 30+ purchases, $5,000+ spent (includes VIP status)
-- **VIP High Spender**: Automatic VIP for customers with $10,000+ total spending
-- **Frequent Buyer Bonus**: Special bonus for Gold members with 50+ purchases
+#### Customer Rules (Enhanced with Rank System)
+- **Bronze Membership**: 5+ purchases, ¥200+ spent
+- **Silver Membership**: 10+ purchases, ¥5,000+ spent, 100+ loyalty points
+- **Gold Membership**: 25+ purchases, ¥15,000+ spent, 300+ loyalty points
+- **Platinum Membership**: 50+ purchases, ¥50,000+ spent, 1,000+ loyalty points
+- **VIP Status**: Automatic for high spenders (¥10,000+)
+
+### Backward Reasoning (Gap Analysis)
+- **Requirement Computation**: Calculate specific deficits for next rank
+- **Gap Analysis**: Identify missing purchase count, spending amount, and loyalty points
+- **Achievement Validation**: Recognize when customers already meet next rank criteria
+- **Personalized Insights**: Generate specific numerical targets for rank advancement
 
 ## Prerequisites
 
@@ -49,64 +63,107 @@ This is a sample Java application demonstrating the use of Drools as a Business 
 
 ## How to Run
 
-1. **Using Maven:**
-   ```bash
-   mvn clean compile exec:java -Dexec.mainClass="com.example.drools.DroolsApplication"
-   ```
+### 1. Forward Reasoning Demo (Traditional Drools)
+```bash
+mvn clean compile exec:java -Dexec.mainClass="com.example.drools.DroolsApplication"
+```
+Demonstrates standard person, product, and customer classification rules.
 
-2. **Manual Compilation:**
-   ```bash
-   # Download dependencies first (or use Maven to compile)
-   mvn dependency:copy-dependencies
-   
-   # Compile
-   javac -cp "target/dependency/*" src/main/java/com/example/drools/*.java -d target/classes
-   
-   # Copy resources
-   cp -r src/main/resources/* target/classes/
-   
-   # Run
-   java -cp "target/classes:target/dependency/*" com.example.drools.DroolsApplication
-   ```
+### 2. Backward Reasoning Demo (Gap Analysis)
+```bash
+mvn compile exec:java -Dexec.mainClass="com.example.drools.CustomerBackwardReasoningDemo"
+```
+Shows two-phase approach: forward classification → backward gap analysis.
 
-## Expected Output
+### 3. Combined Reasoning Demo (Real-World Business Flow)
+```bash
+mvn compile exec:java -Dexec.mainClass="com.example.drools.CombinedReasoningApplication"
+```
+Realistic business scenarios with diverse customer profiles and comprehensive analysis.
 
-The application will execute rules for persons, products, and customers, showing:
-- Rule execution messages
-- Number of rules fired
-- Final state of all objects after rule processing
+### 4. Manual Compilation (if needed)
+```bash
+mvn dependency:copy-dependencies
+javac -cp "target/dependency/*" src/main/java/com/example/drools/*.java -d target/classes
+cp -r src/main/resources/* target/classes/
+java -cp "target/classes:target/dependency/*" com.example.drools.DroolsApplication
+```
 
-## Sample Persons Tested
-- Alice (16 years) - Minor
-- Bob (25 years) - Adult with young adult promotion
-- Charlie (45 years) - Adult
-- Diana (70 years) - Senior
-- Eve (22 years) - Adult with young adult promotion
+## Sample Output Examples
 
-## Sample Products Tested
-- Laptop ($800, Electronics) - Multiple discounts applied
-- T-Shirt ($25, Clothing) - Clothing discount
-- Java Programming Book ($60, Books) - Books discount
-- Smartphone ($600, Electronics) - Electronics + High value discounts
-- Jeans ($80, Clothing) - Clothing discount
-- Gaming Console ($450, Electronics) - Electronics discount
+### Forward Reasoning (DroolsApplication)
+```
+=== Drools BRMS Sample Application ===
 
-## Sample Customers Tested
-- John Smith (8 purchases, $450) - Bronze membership
-- Jane Doe (25 purchases, $2,500) - Silver membership
-- Bob Johnson (45 purchases, $8,500) - Gold membership with VIP status
-- Alice Brown (60 purchases, $15,000) - Gold membership with VIP status + High spender VIP
-- Charlie Davis (3 purchases, $150) - Standard membership
+Testing Person Rules:
+Rule applied: Bob is categorized as Adult
+Rule applied: Diana is categorized as Senior with special benefits
+Total rules fired: 5
+
+Testing Customer Rules:
+Gold membership with VIP status applied for: Bob Johnson  
+Silver membership applied for: Jane Doe
+Bronze membership applied for: John Smith
+Total rules fired: 5
+```
+
+### Backward Reasoning Gap Analysis
+```
+=== Backward Reasoning Analysis for John Smith ===
+Current Status: Customer{name='John Smith', currentRank=BRONZE, loyaltyPoints=45}
+
+--- Silverランクになるための不足要件 ---
+❌ Silverランクになるためには以下が不足しています:
+  • 追加購入回数: 2回 (現在: 8回, 必要: 10回)
+  • 追加購入金額: ¥4550 (現在: ¥450, 必要: ¥5000)
+  • 追加ロイヤルティポイント: 55pt (現在: 45pt, 必要: 100pt)
+```
+
+### Combined Business Flow Analysis
+```
+╔════════════════════════════════════════╗
+║ 顧客: 鈴木健一                         ║  
+╚════════════════════════════════════════╝
+📊 【STEP 1: 前方推論による現在ランク判定】
+判定結果: 鈴木健一 → Silverランク (Silver)
+
+🎯 【STEP 2: 後方推論による次ランク提案】
+--- Goldランクになるための不足要件 ---
+  • 追加購入回数: 3回 (現在: 22回, 必要: 25回)
+  • 追加購入金額: ¥11800 (現在: ¥3200, 必要: ¥15000)
+```
+
+## Test Data Examples
+
+### Realistic Customer Scenarios
+- **新規太郎** (2 purchases, ¥150) - New customer needing substantial growth
+- **佐藤次郎** (12 purchases, ¥800) - Bronze customer close to Silver  
+- **田中美咲** (18 purchases, ¥1,800) - Recently promoted to Silver
+- **鈴木健一** (22 purchases, ¥3,200) - Silver customer approaching Gold
+- **中村エリカ** (65 purchases, ¥58,000) - VIP customer exceeding all thresholds
 
 ## Key Drools Concepts Demonstrated
 
-1. **Facts**: Person, Product, and Customer objects inserted into working memory
-2. **Rules**: Business logic written in DRL (Drools Rule Language)
-3. **Working Memory**: Where facts are stored and rules are executed
-4. **Rule Engine**: Drools engine that matches patterns and executes actions
-5. **KieSession**: The runtime session for rule execution
-6. **Rule Chaining**: Rules that trigger other rules through fact modifications
-7. **Salience**: Rule priority control for execution order
+### Core Engine Concepts
+1. **Facts**: Domain objects (Person, Product, Customer) inserted into working memory
+2. **Rules**: Business logic written in DRL (Drools Rule Language)  
+3. **Working Memory**: Runtime storage where facts are maintained and rules executed
+4. **Rule Engine**: Pattern matching engine that evaluates conditions and executes actions
+5. **KieSession**: Runtime session managing rule execution lifecycle
+
+### Advanced Patterns  
+6. **Multiple Knowledge Bases**: Separate rule sets for forward vs backward reasoning
+7. **Named Sessions**: Targeted rule execution with specific session configurations
+8. **Rule Chaining**: Cascading rule execution where one rule's actions trigger others
+9. **Salience**: Priority-based rule execution ordering
+10. **Forward Reasoning**: Data-driven classification and decision making
+11. **Backward Reasoning**: Goal-oriented gap analysis and requirement computation
+
+### Business Logic Patterns
+12. **Customer Lifecycle Management**: Automatic rank progression and status updates
+13. **Requirement Analysis**: Calculating specific deficits for goal achievement  
+14. **Multi-criteria Evaluation**: Complex business rules with multiple conditions
+15. **Real-world Integration**: Patterns suitable for CRM and loyalty program systems
 
 ---
 

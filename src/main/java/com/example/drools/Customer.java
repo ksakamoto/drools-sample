@@ -6,6 +6,8 @@ public class Customer {
     private double totalSpent;
     private String membershipLevel;
     private boolean vipStatus;
+    private CustomerRank currentRank;
+    private int loyaltyPoints;
 
     public Customer() {}
 
@@ -15,6 +17,18 @@ public class Customer {
         this.totalSpent = totalSpent;
         this.membershipLevel = "Standard";
         this.vipStatus = false;
+        this.currentRank = CustomerRank.BRONZE;
+        this.loyaltyPoints = 0;
+    }
+
+    public Customer(String name, int purchaseCount, double totalSpent, int loyaltyPoints) {
+        this.name = name;
+        this.purchaseCount = purchaseCount;
+        this.totalSpent = totalSpent;
+        this.membershipLevel = "Standard";
+        this.vipStatus = false;
+        this.currentRank = CustomerRank.BRONZE;
+        this.loyaltyPoints = loyaltyPoints;
     }
 
     public String getName() {
@@ -57,6 +71,22 @@ public class Customer {
         this.vipStatus = vipStatus;
     }
 
+    public CustomerRank getCurrentRank() {
+        return currentRank;
+    }
+
+    public void setCurrentRank(CustomerRank currentRank) {
+        this.currentRank = currentRank;
+    }
+
+    public int getLoyaltyPoints() {
+        return loyaltyPoints;
+    }
+
+    public void setLoyaltyPoints(int loyaltyPoints) {
+        this.loyaltyPoints = loyaltyPoints;
+    }
+
     @Override
     public String toString() {
         return "Customer{" +
@@ -65,6 +95,8 @@ public class Customer {
                 ", totalSpent=" + totalSpent +
                 ", membershipLevel='" + membershipLevel + '\'' +
                 ", vipStatus=" + vipStatus +
+                ", currentRank=" + currentRank +
+                ", loyaltyPoints=" + loyaltyPoints +
                 '}';
     }
 }

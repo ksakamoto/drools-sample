@@ -3,4 +3,7 @@
     <kbase name="rules" packages="com.example.drools">
         <ksession name="ksession-rules" default="true"/>
     </kbase>
+    <kbase name="backward-reasoning-only" packages="com.example.drools.backward">
+        <ksession name="backward-reasoning-session"/>
+    </kbase>
 </kmodule>

@@ -1,0 +1,80 @@
+package com.example.drools.backward
+
+import com.example.drools.Customer
+import com.example.drools.CustomerRank
+import com.example.drools.RankRequirement
+
+global Boolean analysisCompleted;
+
+rule "Initialize Current Rank Analysis"
+no-loop
+when
+    $customer: Customer($name: name, $rank: currentRank)
+    not RankRequirement(customerName == $name)
+then
+    CustomerRank nextRank = $rank.getNextRank();
+    if (nextRank != null) {
+        RankRequirement requirement = new RankRequirement($name, $rank, nextRank);
+        requirement.setAnalysisRequested(true);
+        insert(requirement);
+        System.out.println("=== Backward Reasoning Analysis for " + $name + " ===");
+        System.out.println("Current Status: " + $customer.toString());
+        System.out.println("Analyzing requirements to upgrade from " + $rank.getDisplayName() + " to " + nextRank.getDisplayName());
+    }
+end
+
+rule "Analyze Requirements"
+no-loop
+when
+    $customer: Customer($name: name, $purchases: purchaseCount, $spent: totalSpent, $points: loyaltyPoints)
+    $requirement: RankRequirement(customerName == $name, $targetRank: targetRank, analysisRequested == true, analysisCompleted == false)
+then
+    // Check purchase count
+    int requiredPurchases = $targetRank.getMinPurchaseCount();
+    if ($purchases < requiredPurchases) {
+        int shortfall = requiredPurchases - $purchases;
+        $requirement.addMissingRequirement("追加購入回数: " + shortfall + "回 (現在: " + $purchases + "回, 必要: " + requiredPurchases + "回)");
+    }
+    
+    // Check total spent
+    double requiredSpent = $targetRank.getMinTotalSpent();
+    if ($spent < requiredSpent) {
+        double shortfall = requiredSpent - $spent;
+        $requirement.addMissingRequirement("追加購入金額: ¥" + String.format("%.0f", shortfall) + " (現在: ¥" + String.format("%.0f", $spent) + ", 必要: ¥" + String.format("%.0f", requiredSpent) + ")");
+    }
+    
+    // Check loyalty points
+    int requiredPoints = $targetRank.getMinLoyaltyPoints();
+    if ($points < requiredPoints) {
+        int shortfall = requiredPoints - $points;
+        $requirement.addMissingRequirement("追加ロイヤルティポイント: " + shortfall + "pt (現在: " + $points + "pt, 必要: " + requiredPoints + "pt)");
+    }
+
+    // Complete analysis
+    $requirement.setAnalysisCompleted(true);
+    
+    System.out.println("\n--- " + $targetRank.getDisplayName() + "ランクになるための不足要件 ---");
+    
+    if ($requirement.getMissingRequirements().isEmpty()) {
+        System.out.println("✅ おめでとうございます！" + $targetRank.getDisplayName() + "ランクの条件を満たしています！");
+    } else {
+        System.out.println("❌ " + $targetRank.getDisplayName() + "ランクになるためには以下が不足しています:");
+        for (String req : $requirement.getMissingRequirements()) {
+            System.out.println("  • " + req);
+        }
+        
+        System.out.println("\n💡 提案されるアクション:");
+        if ($requirement.getMissingRequirements().stream().anyMatch(r -> r.contains("追加購入回数"))) {
+            System.out.println("  📦 より頻繁にお買い物をしてください");
+        }
+        if ($requirement.getMissingRequirements().stream().anyMatch(r -> r.contains("追加購入金額"))) {
+            System.out.println("  💰 高単価商品の購入を検討してください");
+        }
+        if ($requirement.getMissingRequirements().stream().anyMatch(r -> r.contains("ロイヤルティポイント"))) {
+            System.out.println("  🎯 ポイント獲得キャンペーンに参加してください");
+        }
+    }
+    System.out.println("=====================================\n");
+    
+    update($requirement);
+end

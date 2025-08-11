@@ -1,6 +1,7 @@
 package com.example.drools
 
 import com.example.drools.Customer
+import com.example.drools.CustomerRank
 
 rule "Bronze Membership"
 salience 10
@@ -8,6 +9,7 @@ when
     $customer : Customer(purchaseCount >= 5, purchaseCount < 15, totalSpent >= 200, totalSpent < 1000)
 then
     $customer.setMembershipLevel("Bronze");
+    $customer.setCurrentRank(CustomerRank.BRONZE);
     System.out.println("Bronze membership applied for: " + $customer.getName());
 end
 
@@ -17,6 +19,7 @@ when
     $customer : Customer(purchaseCount >= 15, purchaseCount < 30, totalSpent >= 1000, totalSpent < 5000)
 then
     $customer.setMembershipLevel("Silver");
+    $customer.setCurrentRank(CustomerRank.SILVER);
     System.out.println("Silver membership applied for: " + $customer.getName());
 end
 
@@ -26,6 +29,7 @@ when
     $customer : Customer(purchaseCount >= 30, totalSpent >= 5000)
 then
     $customer.setMembershipLevel("Gold");
+    $customer.setCurrentRank(CustomerRank.GOLD);
     $customer.setVipStatus(true);
     System.out.println("Gold membership with VIP status applied for: " + $customer.getName());
 end
